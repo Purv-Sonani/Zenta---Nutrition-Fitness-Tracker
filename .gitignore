@@ -1,0 +1,14 @@
+# Dependencies
+/backend/node_modules
+
+# Logs
+npm-debug.log*
+
+# Environment variables
+/backend/.env
+
+/backend/serviceAccountKey.json
+
+/node_modules
+/package.json
+/package-lock.json
