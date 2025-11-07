@@ -76,3 +76,17 @@ export const loginUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// Get user profile
+// @route   GET /api/auth/profile
+export const getUserProfile = async (req, res) => {
+  if (req.user) {
+    res.status(200).json({
+      _id: req.user._id,
+      username: req.user.username,
+      email: req.user.email,
+    });
+  } else {
+    res.status(404).json({ message: "User not found" });
+  }
+};
