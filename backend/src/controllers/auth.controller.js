@@ -1,5 +1,6 @@
 import User from "../models/User.model.js";
 import bcrypt from "bcryptjs";
+import generateToken from "../utils/generateToken.js";
 
 // Register a new user
 // @route   POST /api/auth/register
@@ -42,6 +43,36 @@ export const registerUser = async (req, res) => {
     }
   } catch (error) {
     // Handle any server errors
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Authenticate user & get token (Login)
+// @route   POST /api/auth/login
+export const loginUser = async (req, res) => {
+  // Get email and password from the request body
+  const { email, password } = req.body;
+
+  try {
+    // Find the user in the database by their email
+    const user = await User.findOne({ email });
+
+    // 3. Check if the user exists AND if the password matches
+    if (user && (await bcrypt.compare(password, user.password))) {
+      // 4. If they match, generate a token and send it in the cookie
+      generateToken(res, user._id);
+
+      // 5. Send back a successful response with user data (no password)
+      res.status(200).json({
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+      });
+    } else {
+      // 401 means "Unauthorized"
+      res.status(401).json({ message: "Invalid email or password" });
+    }
+  } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
