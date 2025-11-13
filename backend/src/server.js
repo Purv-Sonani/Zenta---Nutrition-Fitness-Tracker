@@ -5,6 +5,7 @@ import connectDB from "./config/db.js";
 import authRoutes from "./api/auth.routes.js";
 import cookieParser from "cookie-parser";
 import mealRoutes from "./api/meal.routes.js";
+import workoutRoutes from "./api/workout.routes.js";
 
 connectDB();
 
@@ -19,6 +20,8 @@ app.use(cors());
 app.use("/api/auth", authRoutes);
 // request to /api/meal will be handled by authRoutes
 app.use("/api/meals", mealRoutes);
+// request to /api/workouts will be handled by authRoutes
+app.use("/api/workouts", workoutRoutes);
 
 app.get("/", (req, res) => {
   res.send("FitFuel API is running with ES Modules!");
