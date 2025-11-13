@@ -4,6 +4,7 @@ import "dotenv/config"; // Load environment variables
 import connectDB from "./config/db.js";
 import authRoutes from "./api/auth.routes.js";
 import cookieParser from "cookie-parser";
+import mealRoutes from "./api/meal.routes.js";
 
 connectDB();
 
@@ -14,8 +15,10 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors());
 
-// Any request to /api/auth will be handled by authRoutes
+// request to /api/auth will be handled by authRoutes
 app.use("/api/auth", authRoutes);
+// request to /api/meal will be handled by authRoutes
+app.use("/api/meals", mealRoutes);
 
 app.get("/", (req, res) => {
   res.send("FitFuel API is running with ES Modules!");
