@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    /* 1. Environment & Output */
+    "target": "ES2022",                /* Generates modern JS code (Node 18/20+ supports this natively) */
+    "module": "NodeNext",              /* The modern standard for Node.js ESM support */
+    "moduleResolution": "NodeNext",    /* Resolves modules using modern Node rules */
+    "rootDir": ".",                /* Your source files are here */
+    "outDir": "./dist",                /* Compiled JS goes here */
+    "sourceMap": true,                 /* Helps debugging (links JS back to TS) */
+
+    /* 2. Express & Library Compatibility */
+    "esModuleInterop": true,           /* Crucial: Allows 'import express from "express"' to work */
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,              /* Skips type checking of node_modules (speeds up build) */
+
+    /* 3. Type Safety (Strict but practical) */
+    "strict": true,                    /* Enables all strict type checking options */
+    "noImplicitAny": true,             /* Error if a type isn't specified and TS can't infer it */
+    
+    /* 4. Modern TS Features */
+    "verbatimModuleSyntax": false,     /* Set to false for easier Express usage unless you strictly use 'import type' */
+    "resolveJsonModule": true          /* Allows importing .json files */
+  },
+  "include": ["src/**/*", "prisma/**/*"],             /* Compile everything in src */
+  "exclude": ["node_modules", "dist"]  /* Don't compile libraries or output */
+}

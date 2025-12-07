@@ -1,13 +1,11 @@
 import express from "express";
 import cors from "cors";
 import "dotenv/config"; // Load environment variables
-import connectDB from "./config/db.js";
 import authRoutes from "./api/auth.routes.js";
 import cookieParser from "cookie-parser";
 import mealRoutes from "./api/meal.routes.js";
 import workoutRoutes from "./api/workout.routes.js";
 
-connectDB();
 
 // Initialize the Express app
 const app = express();

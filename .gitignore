@@ -4,16 +4,28 @@
 node_modules/
 
 # ------------------------------------
-# Environment Variables & Secrets
+# Environment Variables & Secrets (CRITICAL)
 # ------------------------------------
 .env
 .env.local
 .env.*.local
 *.local
 
-# Backend specific secrets
+# Backend secrets
 /backend/.env
 /backend/serviceAccountKey.json
+
+# ------------------------------------
+# Build Outputs & Generated Files
+# ------------------------------------
+dist/
+dist-ssr/
+coverage/
+build/
+
+# Ignore generated Prisma clients (if they accidentally get created outside node_modules)
+generated/
+/backend/src/generated/
 
 # ------------------------------------
 # Logs
@@ -27,14 +39,7 @@ pnpm-debug.log*
 lerna-debug.log*
 
 # ------------------------------------
-# Build Outputs (Frontend)
-# ------------------------------------
-dist/
-dist-ssr/
-coverage/
-
-# ------------------------------------
-# Editor & OS Files
+# OS & Editor Files
 # ------------------------------------
 .vscode/*
 !.vscode/extensions.json
