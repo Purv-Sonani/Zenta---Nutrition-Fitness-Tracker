@@ -1,97 +1,83 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express"; // Import NextFunction
+import {prisma} from "../../prisma/client.js";
 import bcrypt from "bcryptjs";
 import generateToken from "../utils/generateToken.js";
-import { prisma } from "../../prisma/client.js";
+import { registerSchema, loginSchema } from "../utils/validation.js"; // Import Zod schemas
+import { AppError } from "../middleware/error.middleware.js";
 
 // @desc    Register a new user
-// @route   POST /api/auth/register
-export const registerUser = async (req: Request, res: Response) => {
-  const { username, email, password } = req.body;
-
+export const registerUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // 1. Check if user exists
+    // 1. Validate Input (Zod)
+    const validation = registerSchema.safeParse(req.body);
+    if (!validation.success) {
+      // Throw formatted validation error
+      throw new AppError(validation.error.issues[0].message, 400);
+    }
+    
+    const { username, email, password } = validation.data; // Use typed data
+
+    // 2. Check existence
     const userExists = await prisma.user.findFirst({
-      where: {
-        OR: [{ email: email }, { username: username }],
-      },
+      where: { OR: [{ email }, { username }] },
     });
 
     if (userExists) {
-      res.status(400).json({ message: "User already exists" });
-      return;
+      throw new AppError("User already exists", 400);
     }
 
-    // 2. Hash password
+    // 3. Create User
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // 3. Create User
     const newUser = await prisma.user.create({
-      data: {
-        username,
-        email,
-        password: hashedPassword,
-      },
+      data: { username, email, password: hashedPassword },
     });
 
-    if (newUser) {
-      // Generate token immediately
-      generateToken(res, newUser.id);
+    generateToken(res, newUser.id);
 
-      res.status(201).json({
+    res.status(201).json({
+      success: true,
+      data: {
         id: newUser.id,
         username: newUser.username,
         email: newUser.email,
-        createdAt: newUser.createdAt,
-      });
-    } else {
-      res.status(400).json({ message: "Invalid user data" });
-    }
+      },
+    });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Server error";
-    res.status(500).json({ message });
+    next(error); // Pass to global error handler
   }
 };
 
-// @desc    Login user & get token
-// @route   POST /api/auth/login
-export const loginUser = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-
+// @desc    Login user
+export const loginUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // 1. Find user by email
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+    // 1. Validate Input
+    const validation = loginSchema.safeParse(req.body);
+    if (!validation.success) {
+      throw new AppError(validation.error.issues[0].message, 400);
+    }
 
-    // 2. Check password
-    if (user && (await bcrypt.compare(password, user.password))) {
-      generateToken(res, user.id);
+    const { email, password } = validation.data;
 
-      res.status(200).json({
+    // 2. Find User
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      throw new AppError("Invalid email or password", 401);
+    }
+
+    generateToken(res, user.id);
+
+    res.status(200).json({
+      success: true,
+      data: {
         id: user.id,
         username: user.username,
         email: user.email,
-      });
-    } else {
-      res.status(401).json({ message: "Invalid email or password" });
-    }
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Server error";
-    res.status(500).json({ message });
-  }
-};
-
-// @desc    Get user profile
-// @route   GET /api/auth/profile
-export const getUserProfile = async (req: Request, res: Response) => {
-  if (req.user) {
-    res.status(200).json({
-      id: req.user.id,
-      username: req.user.username,
-      email: req.user.email,
+      },
     });
-  } else {
-    res.status(404).json({ message: "User not found" });
+  } catch (error) {
+    next(error);
   }
 };

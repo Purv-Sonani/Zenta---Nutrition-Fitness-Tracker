@@ -1,45 +1,53 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { prisma } from "../../prisma/client.js";
+import { workoutSchema } from "../utils/validation.js";
+import { AppError } from "../middleware/error.middleware.js";
 
 // @desc    Log a new workout
 // @route   POST /api/workouts
 // @access  Private
-export const addWorkout = async (req: Request, res: Response) => {
-  const { activity, duration, caloriesBurned, date } = req.body;
-
+export const addWorkout = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    if (!req.user) {
-      res.status(401).json({ message: "Not authorized" });
-      return;
+    // 1. Validate Input
+    const validation = workoutSchema.safeParse(req.body);
+
+    if (!validation.success) {
+      throw new AppError(validation.error.issues[0].message, 400);
     }
 
+    const data = validation.data;
+
+    if (!req.user) {
+      throw new AppError("Not authorized", 401);
+    }
+
+    // 2. Create Workout
     const workout = await prisma.workout.create({
       data: {
-        activity,
-        // Ensure numbers are actually numbers
-        duration: parseInt(duration),
-        caloriesBurned: parseInt(caloriesBurned),
-        // If date is provided, convert to Date object; otherwise default is handled by Prisma or undefined
-        date: date ? new Date(date) : undefined,
+        activity: data.activity,
+        duration: data.duration,
+        caloriesBurned: data.caloriesBurned,
+        date: data.date ? new Date(data.date) : undefined,
         userId: req.user.id,
       },
     });
 
-    res.status(201).json(workout);
+    res.status(201).json({
+      success: true,
+      data: workout,
+    });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Server error";
-    res.status(500).json({ message });
+    next(error);
   }
 };
 
 // @desc    Get all workouts for the user
 // @route   GET /api/workouts
 // @access  Private
-export const getWorkouts = async (req: Request, res: Response) => {
+export const getWorkouts = async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (!req.user) {
-      res.status(401).json({ message: "Not authorized" });
-      return;
+      throw new AppError("Not authorized", 401);
     }
 
     const workouts = await prisma.workout.findMany({
@@ -51,9 +59,12 @@ export const getWorkouts = async (req: Request, res: Response) => {
       },
     });
 
-    res.status(200).json(workouts);
+    res.status(200).json({
+      success: true,
+      count: workouts.length,
+      data: workouts,
+    });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Server error";
-    res.status(500).json({ message });
+    next(error);
   }
 };

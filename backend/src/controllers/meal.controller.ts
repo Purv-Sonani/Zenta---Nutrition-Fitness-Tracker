@@ -1,46 +1,59 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { prisma } from "../../prisma/client.js";
-
+import { mealSchema } from "../utils/validation.js";
+import { AppError } from "../middleware/error.middleware.js";
 
 // @desc    Log a new meal
 // @route   POST /api/meals
 // @access  Private
-export const addMeal = async (req: Request, res: Response) => {
-  const { name, calories, protein, carbs, fat } = req.body;
-
+export const addMeal = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // Ensure req.user exists (handled by auth middleware, but TS needs assurance)
-    if (!req.user) {
-      res.status(401).json({ message: "Not authorized" });
-      return;
+    // 1. Validate Input (Zod)
+    const validation = mealSchema.safeParse(req.body);
+
+    if (!validation.success) {
+      // Return the first specific validation error message
+      throw new AppError(validation.error.issues[0].message, 400);
     }
 
+    // TypeScript now knows exactly what shape 'data' is
+    const data = validation.data;
+
+    // 2. Security Check: Ensure user is attached
+    if (!req.user) {
+      throw new AppError("Not authorized", 401);
+    }
+
+    // 3. Create Meal
     const meal = await prisma.meal.create({
       data: {
-        name,
-        calories,
-        protein,
-        carbs,
-        fat,
+        name: data.name,
+        calories: data.calories,
+        protein: data.protein, // Optional fields handled by Zod default(0)
+        carbs: data.carbs,
+        fat: data.fat,
+        // If date is provided, use it; otherwise defaults to now() in Schema
+        date: data.date ? new Date(data.date) : undefined,
         userId: req.user.id,
       },
     });
 
-    res.status(201).json(meal);
+    res.status(201).json({
+      success: true,
+      data: meal,
+    });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Server error";
-    res.status(500).json({ message });
+    next(error); // Pass errors to our Global Error Handler
   }
 };
 
 // @desc    Get all meals for the logged-in user
 // @route   GET /api/meals
 // @access  Private
-export const getMeals = async (req: Request, res: Response) => {
+export const getMeals = async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (!req.user) {
-      res.status(401).json({ message: "Not authorized" });
-      return;
+      throw new AppError("Not authorized", 401);
     }
 
     const meals = await prisma.meal.findMany({
@@ -52,9 +65,12 @@ export const getMeals = async (req: Request, res: Response) => {
       },
     });
 
-    res.status(200).json(meals);
+    res.status(200).json({
+      success: true,
+      count: meals.length,
+      data: meals,
+    });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Server error";
-    res.status(500).json({ message });
+    next(error);
   }
 };
