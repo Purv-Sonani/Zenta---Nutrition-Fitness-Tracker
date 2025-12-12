@@ -3,16 +3,19 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { authService, loginSchema } from "../../../services/auth.service";
 import { z } from "zod";
 import { useAuthStore } from "../../../store/useAuthStore";
+import { authService, loginSchema } from "../../../services/auth.service";
+
+// UI Components
+import { Input } from "../../../components/ui/Input";
+import { Button } from "../../../components/ui/Button";
 
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const setAuth = useAuthStore((state) => state.setAuth);
 
-  // Check if user was redirected here after registration
   const registeredSuccess = searchParams.get("registered");
 
   const [formData, setFormData] = useState({
@@ -25,10 +28,9 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    if (errors[e.target.name]) {
-      setErrors({ ...errors, [e.target.name]: "" });
-    }
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
     setGeneralError("");
   };
 
@@ -39,26 +41,18 @@ export default function LoginPage() {
     setGeneralError("");
 
     try {
-      // 1. Validate Input
       const validData = loginSchema.parse(formData);
-
-      // 2. Call API
       const response = await authService.login(validData);
 
-      // 3. Update Global Store
       if (response.data) {
         setAuth(response.data);
       }
-
-      // 4. Redirect to Dashboard
       router.push("/dashboard");
     } catch (error) {
       if (error instanceof z.ZodError) {
         const fieldErrors: Record<string, string> = {};
         error.issues.forEach((err) => {
-          if (err.path[0]) {
-            fieldErrors[err.path[0].toString()] = err.message;
-          }
+          if (err.path[0]) fieldErrors[err.path[0].toString()] = err.message;
         });
         setErrors(fieldErrors);
       } else {
@@ -76,63 +70,22 @@ export default function LoginPage() {
       <div className="w-full max-w-md space-y-8 bg-white p-8 shadow-lg rounded-xl">
         <div className="text-center">
           <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Welcome back</h2>
-          <p className="mt-2 text-sm text-gray-600">Please sign in to your account</p>
+          <p className="mt-2 text-sm text-gray-600">Sign in to your Zenta account</p>
         </div>
 
-        {/* Success Message if redirected from Register */}
-        {registeredSuccess && <div className="rounded-md bg-green-50 p-4 text-sm text-green-700 border border-green-200">Account created successfully! Please sign in.</div>}
+        {registeredSuccess && <div className="rounded-md bg-green-50 p-4 text-sm text-green-700 border border-green-200">Account created! You can now sign in.</div>}
 
-        {/* Error Message */}
         {generalError && <div className="rounded-md bg-red-50 p-4 text-sm text-red-700 border border-red-200">{generalError}</div>}
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
-            {/* Email */}
-            <div>
-              <label htmlFor="email" className="sr-only">
-                Email address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                className={`relative block w-full appearance-none rounded-md border px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm ${errors.email ? "border-red-500" : "border-gray-300"}`}
-                placeholder="Email address"
-                value={formData.email}
-                onChange={handleChange}
-              />
-              {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
-            </div>
-
-            {/* Password */}
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                className={`relative block w-full appearance-none rounded-md border px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm ${errors.password ? "border-red-500" : "border-gray-300"}`}
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-              />
-              {errors.password && <p className="mt-1 text-xs text-red-500">{errors.password}</p>}
-            </div>
+            <Input id="email" name="email" label="Email Address" type="email" placeholder="Email Address" value={formData.email} onChange={handleChange} error={errors.email} />
+            <Input id="password" name="password" label="Password" type="password" placeholder="Password" value={formData.password} onChange={handleChange} error={errors.password} />
           </div>
 
-          <div>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="group relative flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-300 disabled:cursor-not-allowed transition-all"
-            >
-              {isLoading ? "Signing in..." : "Sign in"}
-            </button>
-          </div>
+          <Button type="submit" className="w-full" isLoading={isLoading}>
+            {isLoading ? "Signing in..." : "Sign in"}
+          </Button>
 
           <div className="text-center text-sm">
             <span className="text-gray-500">Don&apos;t have an account? </span>
