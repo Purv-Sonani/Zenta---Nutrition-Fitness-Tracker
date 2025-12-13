@@ -6,8 +6,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { z } from "zod";
 import { useAuthStore } from "../../../store/useAuthStore";
 import { authService, loginSchema } from "../../../services/auth.service";
-
-// UI Components
 import { Input } from "../../../components/ui/Input";
 import { Button } from "../../../components/ui/Button";
 
@@ -89,7 +87,7 @@ export default function LoginPage() {
 
           <div className="text-center text-sm">
             <span className="text-gray-500">Don&apos;t have an account? </span>
-            <Link href="/register" className="font-medium text-blue-600 hover:text-blue-500">
+            <Link href="/register" className="font-medium text-primary hover:text-primary-hover">
               Sign up
             </Link>
           </div>

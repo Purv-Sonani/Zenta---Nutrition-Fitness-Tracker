@@ -6,8 +6,6 @@ import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { useAuthStore } from "../../../store/useAuthStore";
 import { authService, registerSchema } from "../../../services/auth.service";
-
-// UI Components
 import { Input } from "../../../components/ui/Input";
 import { Button } from "../../../components/ui/Button";
 
@@ -29,7 +27,6 @@ export default function RegisterPage() {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    // Clear errors as user types
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
@@ -43,13 +40,9 @@ export default function RegisterPage() {
     setGeneralError("");
 
     try {
-      // 1. Validate
       const validData = registerSchema.parse(formData);
-
-      // 2. Register
       const response = await authService.register(validData);
 
-      // 3. Update Store & Redirect
       if (response.data) {
         setAuth(response.data);
       }
@@ -96,7 +89,7 @@ export default function RegisterPage() {
 
           <div className="text-center text-sm">
             <span className="text-gray-500">Already have an account? </span>
-            <Link href="/login" className="font-medium text-blue-600 hover:text-blue-500">
+            <Link href="/login" className="font-medium text-primary hover:text-primary-hover">
               Sign in
             </Link>
           </div>
