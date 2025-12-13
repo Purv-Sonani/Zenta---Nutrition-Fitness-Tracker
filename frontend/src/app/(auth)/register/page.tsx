@@ -4,10 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
-import { useAuthStore } from "../../../store/useAuthStore";
+import { useAuthStore } from "@/src/store/useAuthStore";
 import { authService, registerSchema } from "../../../services/auth.service";
-import { Input } from "../../../components/ui/Input";
-import { Button } from "../../../components/ui/Button";
+import { Input, Button } from "@/src/components/ui";
 
 export default function RegisterPage() {
   const router = useRouter();

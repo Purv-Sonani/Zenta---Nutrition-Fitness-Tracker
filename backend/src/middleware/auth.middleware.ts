@@ -1,6 +1,6 @@
-import jwt, { JwtPayload } from 'jsonwebtoken';
-import { Request, Response, NextFunction } from 'express';
-import { prisma } from '../../prisma/client.js'; // .js extension is required!
+import jwt, { JwtPayload } from "jsonwebtoken";
+import { Request, Response, NextFunction } from "express";
+import { prisma } from "../../prisma/client.js"; // .js extension is required!
 
 // Define what our decoded token looks like
 interface DecodedToken extends JwtPayload {
@@ -18,7 +18,7 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
       // 1. Verify the token
       // We use '!' to tell TS we are sure the secret exists (checked in generateToken)
       const secret = process.env.JWT_SECRET!;
-      
+
       const decoded = jwt.verify(token, secret) as DecodedToken;
 
       // 2. Find the user in the database
@@ -28,22 +28,22 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
 
       if (user) {
         // 3. Remove the password from the object
-        // We destructure 'password' out and keep the rest in 'userWithoutPassword'
+        // destructure 'password' out and keep the rest in 'userWithoutPassword'
         const { password, ...userWithoutPassword } = user;
 
         // 4. Attach the user to the request object
-        // We cast as 'any' here to prevent strict type conflicts with Express definitions
+        // cast as 'any' here to prevent strict type conflicts with Express definitions
         req.user = userWithoutPassword as any;
-        
+
         next();
       } else {
-        res.status(401).json({ message: 'Not authorized, user not found' });
+        res.status(401).json({ message: "Not authorized, user not found" });
       }
     } catch (error) {
       console.error(error);
-      res.status(401).json({ message: 'Not authorized, token failed' });
+      res.status(401).json({ message: "Not authorized, token failed" });
     }
   } else {
-    res.status(401).json({ message: 'Not authorized, no token' });
+    res.status(401).json({ message: "Not authorized, no token" });
   }
 };

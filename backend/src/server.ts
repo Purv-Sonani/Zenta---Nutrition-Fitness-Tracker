@@ -8,15 +8,22 @@ import mealRoutes from "./api/meal.routes.js";
 import workoutRoutes from "./api/workout.routes.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 
-
 // Initialize the Express app
 const app = express();
 
 app.use(helmet()); // Adds various HTTP headers for security
-app.use(cors());
+
+app.use(
+  cors({
+    origin: "http://localhost:3000", // STRICTLY allow only your frontend
+    credentials: true, // Allow cookies (Essential for Auth)
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
 app.use(express.json());
 app.use(cookieParser());
-
 
 // request to /api/auth will be handled by authRoutes
 app.use("/api/auth", authRoutes);

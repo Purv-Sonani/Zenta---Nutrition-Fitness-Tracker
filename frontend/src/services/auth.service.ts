@@ -15,7 +15,7 @@ export type RegisterInput = z.infer<typeof registerSchema>;
 export const loginSchema = z.object({
   email: z.email("Please enter a valid email address"),
   // We don't strictly enforce min-length on login to avoid revealing rules to attackers,
-  // but we ensure it's a string.
+  // but needs to ensure it's a string.
   password: z.string().min(1, "Password is required"),
 });
 

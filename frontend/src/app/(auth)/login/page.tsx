@@ -6,8 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { z } from "zod";
 import { useAuthStore } from "../../../store/useAuthStore";
 import { authService, loginSchema } from "../../../services/auth.service";
-import { Input } from "../../../components/ui/Input";
-import { Button } from "../../../components/ui/Button";
+import { Input, Button } from "@/src/components/ui";
 
 export default function LoginPage() {
   const router = useRouter();

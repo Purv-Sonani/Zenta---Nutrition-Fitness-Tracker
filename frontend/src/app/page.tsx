@@ -8,7 +8,6 @@ import { Loader } from "../components/ui/Loader";
 export default function HomePage() {
   const router = useRouter();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-
   useEffect(() => {
     if (isAuthenticated) {
       router.push("/dashboard");
