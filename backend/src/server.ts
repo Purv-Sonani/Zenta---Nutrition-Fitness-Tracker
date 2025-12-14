@@ -12,7 +12,7 @@ import { errorHandler } from "./middleware/error.middleware.js";
 const app = express();
 
 app.use(helmet()); // Adds various HTTP headers for security
-
+app.set("trust proxy", 1);
 app.use(
   cors({
     origin: ["http://localhost:3000", process.env.CLIENT_URL || ""],
