@@ -1,14 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { z } from "zod";
 import { useAuthStore } from "../../../store/useAuthStore";
 import { authService, loginSchema } from "../../../services/auth.service";
-import { Input, Button } from "@/src/components/ui";
+import { Input, Button, Loader } from "@/src/components/ui";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const setAuth = useAuthStore((state) => state.setAuth);
@@ -93,5 +94,20 @@ export default function LoginPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+// 2. Export a new default component that wraps everything in Suspense
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-96 items-center justify-center">
+          <Loader className="h-10 w-10 text-primary" />
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }
