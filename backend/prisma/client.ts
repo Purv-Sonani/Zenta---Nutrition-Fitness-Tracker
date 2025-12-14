@@ -1,10 +1,13 @@
-import "dotenv/config";
-import { PrismaPg } from '@prisma/adapter-pg'
-import { PrismaClient } from "../src/generated/prisma/client.js";
+import { PrismaClient } from "@prisma/client";
 
-const connectionString = `${process.env.DATABASE_URL}`
+// 1. Singleton pattern to prevent multiple instances during hot-reloading in dev
+const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
-const adapter = new PrismaPg({ connectionString })
-const prisma = new PrismaClient({ adapter })
+export const prisma =
+  globalForPrisma.prisma ||
+  new PrismaClient({
+    // Optional: Log queries in development for easier debugging
+    log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
+  });
 
-export { prisma }
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
