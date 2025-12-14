@@ -4,6 +4,7 @@ import { protect } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
+// These routes are protected. User must be logged in.
 router.route("/").post(protect, addWorkout).get(protect, getWorkouts);
 
 export default router;

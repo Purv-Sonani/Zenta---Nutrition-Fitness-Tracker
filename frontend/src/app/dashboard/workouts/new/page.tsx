@@ -79,7 +79,7 @@ export default function NewWorkoutPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <Input id="duration" name="duration" label="Duration" type="number" placeholder="0" suffix="min" value={formData.duration} onChange={handleChange} required />
-            <Input id="caloriesBurned" name="caloriesBurned" label="Calories (Est.)" type="number" placeholder="0" suffix="kcal" value={formData.caloriesBurned} onChange={handleChange} />
+            <Input id="caloriesBurned" name="caloriesBurned" label="Calories Burned (Est.)" type="number" placeholder="0" suffix="kcal" value={formData.caloriesBurned} onChange={handleChange} />
           </div>
 
           <div className="pt-2">

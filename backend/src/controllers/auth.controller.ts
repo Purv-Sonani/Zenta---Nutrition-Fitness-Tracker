@@ -112,3 +112,12 @@ export const getUserProfile = async (req: Request, res: Response, next: NextFunc
     res.status(500).json({ message: "Server error fetching profile" });
   }
 };
+
+export const logoutUser = (req: any, res: any) => {
+  res.cookie("jwt", "", {
+    httpOnly: true,
+    expires: new Date(0), // Set expiration to the past
+  });
+
+  res.status(200).json({ message: "Logged out successfully" });
+};

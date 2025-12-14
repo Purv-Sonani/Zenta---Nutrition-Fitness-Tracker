@@ -4,8 +4,7 @@ import { protect } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-// These routes are protected. You must be logged in.
-// We can chain methods: .post() to add, .get() to view.
+// These routes are protected. User must be logged in.
 router.route("/").post(protect, addMeal).get(protect, getMeals);
 
 export default router;

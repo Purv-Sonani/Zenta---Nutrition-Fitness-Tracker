@@ -2,10 +2,17 @@ import api from "../lib/api";
 import { AuthResponse } from "../types/auth";
 import { z } from "zod";
 
+export interface UserProfile {
+  id: string;
+  username: string;
+  email: string;
+  createdAt: string;
+}
+
 // --- Register Schema ---
 export const registerSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
-  email: z.string().email("Please enter a valid email address"),
+  email: z.email("Please enter a valid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
@@ -35,8 +42,8 @@ export const authService = {
   },
 
   // Get Current User Profile (for session restoration)
-  async getProfile(): Promise<AuthResponse> {
-    const response = await api.get<AuthResponse>("/auth/profile");
+  async getProfile(): Promise<UserProfile> {
+    const response = await api.get<UserProfile>("/auth/profile");
     return response.data;
   },
 
