@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { prisma } from "../../prisma/client.js";
+import { prisma } from "../lib/prisma.js";
 import { mealSchema } from "../utils/validation.js";
 import { AppError } from "../middleware/error.middleware.js";
 

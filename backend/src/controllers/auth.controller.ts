@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express"; // Import NextFunction
-import { prisma } from "../../prisma/client.js";
+import { prisma } from "../lib/prisma.js";
 import bcrypt from "bcryptjs";
 import generateToken from "../utils/generateToken.js";
 import { registerSchema, loginSchema } from "../utils/validation.js"; // Import Zod schemas
