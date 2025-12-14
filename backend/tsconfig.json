@@ -4,7 +4,7 @@
     "target": "ES2022",                /* Generates modern JS code (Node 18/20+ supports this natively) */
     "module": "NodeNext",              /* The modern standard for Node.js ESM support */
     "moduleResolution": "NodeNext",    /* Resolves modules using modern Node rules */
-    "rootDir": ".",                /* Your source files are here */
+    "rootDir": "./src",                /* Your source files are here */
     "outDir": "./dist",                /* Compiled JS goes here */
     "sourceMap": true,                 /* Helps debugging (links JS back to TS) */
 
@@ -21,6 +21,6 @@
     "verbatimModuleSyntax": false,     /* Set to false for easier Express usage unless you strictly use 'import type' */
     "resolveJsonModule": true          /* Allows importing .json files */
   },
-  "include": ["src/**/*", "prisma/**/*"],             /* Compile everything in src */
+  "include": ["src/**/*"],             /* Compile everything in src */
   "exclude": ["node_modules", "dist"]  /* Don't compile libraries or output */
 }
