@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import mealRoutes from "./api/meal.routes.js";
 import workoutRoutes from "./api/workout.routes.js";
 import { errorHandler } from "./middleware/error.middleware.js";
+import aiRoutes from "./api/ai.routes.js";
 
 // Initialize the Express app
 const app = express();
@@ -31,6 +32,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/meals", mealRoutes);
 // request to /api/workouts will be handled by authRoutes
 app.use("/api/workouts", workoutRoutes);
+// request to /api/ai will be handled by aiRoutes
+app.use("/api/ai", aiRoutes);
 
 // Global Error Handler
 app.use(errorHandler);
