@@ -12,7 +12,7 @@ export const balanceMeal = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Meal description is required" });
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
 
     // Strict Prompt Engineering
     const prompt = `

@@ -1,5 +1,5 @@
 import api from "@/src/lib/api";
-import { Meal, CreateMealData } from "@/src/types/nutrition";
+import { CreateMealData } from "@/src/types/nutrition";
 
 export const nutritionService = {
   getAll: async () => {

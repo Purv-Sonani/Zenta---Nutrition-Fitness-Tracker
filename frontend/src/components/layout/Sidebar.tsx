@@ -6,7 +6,8 @@ import { FaHome, FaDumbbell, FaAppleAlt, FaUser, FaSignOutAlt, FaTimes } from "r
 import { authService } from "@/src/services/auth.service";
 import { useRouter } from "next/navigation";
 import { useUIStore } from "@/src/store/useUiStore";
-import { clsx } from "clsx"; // Helper for clean classes
+import { clsx } from "clsx";
+import { Sparkles } from "lucide-react";
 
 export function Sidebar() {
   const router = useRouter();
@@ -30,6 +31,11 @@ export function Sidebar() {
     { name: "Workouts", href: "/dashboard/workouts", icon: FaDumbbell },
     { name: "Nutrition", href: "/dashboard/nutrition", icon: FaAppleAlt }, // Changed icon to Apple/Nutrition
     { name: "Profile", href: "/dashboard/profile", icon: FaUser },
+    {
+      name: "AI Balancer",
+      href: "/dashboard/balancer",
+      icon: Sparkles, // Uses the Lucide 'Sparkles' icon to denote AI
+    },
   ];
 
   return (
