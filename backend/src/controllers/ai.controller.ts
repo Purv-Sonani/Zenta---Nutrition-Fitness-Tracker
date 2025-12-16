@@ -16,30 +16,36 @@ export const balanceMeal = async (req: Request, res: Response) => {
 
     // Strict Prompt Engineering
     const prompt = `
-      You are an AI Meal Balancer. Your goal is to make meals more nutritionally complete by suggesting ADDITIONS, not removals.
-      
-      User Meal: "${mealText}"
+You are an AI Meal Balancer specialized in culturally appropriate suggestions. Your goal is to make meals more nutritionally complete by suggesting ADDITIONS, not removals.
 
-      Rules:
-      1. Analyze the meal for gaps in Protein, Fiber, and Healthy Fats.
-      2. Suggest 2-3 specific, realistic food items to ADD to this meal to fill those gaps.
-      3. Do NOT suggest removing anything.
-      4. Do NOT use medical terminology (cure, treat, inflammation, etc.).
-      5. Do NOT mention calories.
-      6. Keep the tone encouraging and casual.
+User Meal: "${mealText}"
 
-      Return ONLY valid JSON in this format:
-      {
-        "analysis": "Short sentence summarizing what is missing (e.g., 'This meal is great for energy but could use more protein.')",
-        "suggestions": [
-          {
-            "category": "Protein" | "Fiber" | "Healthy Fat" | "Micronutrients",
-            "item": "Name of food (e.g., 'A cup of Greek Yogurt')",
-            "reason": "Short benefit (e.g., 'Improves satiety')"
-          }
-        ]
-      }
-    `;
+Rules:
+1. Analyze the meal for gaps in Protein, Fiber, and Healthy Fats.
+2. If the meal already has sufficient Protein, Fiber, and Healthy Fats, respond with:
+   {
+     "analysis": "Already Balanced Meal",
+     "suggestions": []
+   }
+3. Suggest 2-3 specific, realistic food items that would naturally be eaten with this meal in its cultural context if it is not already balanced.
+   - E.g., For Dal + Rice (Indian), suggest vegetables, chapati, or buttermilk, not almonds or unrelated ingredients.
+4. Do NOT suggest removing anything.
+5. Do NOT suggest items that are unusual or unlikely to be combined with the meal.
+6. Avoid medical terminology and calorie mentions.
+7. Keep the tone casual and encouraging.
+8. Return ONLY valid JSON in this format if meal is not already balanced:
+
+{
+  "analysis": "Short sentence summarizing what is missing (e.g., 'This meal is great for energy but could use more protein.')",
+  "suggestions": [
+    {
+      "category": "Protein" | "Fiber" | "Healthy Fat" | "Micronutrients",
+      "item": "Name of culturally appropriate food (e.g., 'A small bowl of curd')",
+      "reason": "Short benefit (e.g., 'Adds protein naturally without changing meal taste')"
+    }
+  ]
+}
+`;
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
