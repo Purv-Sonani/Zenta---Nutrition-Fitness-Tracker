@@ -1,6 +1,8 @@
 import { Pool } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "@prisma/client";
+import pkg from "@prisma/client";
+const { PrismaClient } = pkg;
+import type { PrismaClient as PrismaClientType } from "@prisma/client";
 
 // 1. Setup the Postgres Driver (pg)
 const connectionString = `${process.env.DATABASE_URL}`;
@@ -11,7 +13,7 @@ const pool = new Pool({ connectionString });
 const adapter = new PrismaPg(pool);
 
 // 3. Setup Singleton for Dev (Prevents "Too many connections" on reload)
-const globalForPrisma = global as unknown as { prisma: PrismaClient };
+const globalForPrisma = global as unknown as { prisma: PrismaClientType | undefined };
 
 export const prisma =
   globalForPrisma.prisma ||

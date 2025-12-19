@@ -19,7 +19,8 @@
     
     /* 4. Modern TS Features */
     "verbatimModuleSyntax": false,     /* Set to false for easier Express usage unless you strictly use 'import type' */
-    "resolveJsonModule": true          /* Allows importing .json files */
+    "resolveJsonModule": true,          /* Allows importing .json files */
+    "isolatedModules": true
   },
   "include": ["src/**/*"],             /* Compile everything in src */
   "exclude": ["node_modules", "dist"]  /* Don't compile libraries or output */

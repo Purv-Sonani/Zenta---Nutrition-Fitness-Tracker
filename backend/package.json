@@ -5,11 +5,10 @@
   "main": "dist/server.js",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
     "build": "tsc",
-    "test": "jest",
     "start": "node dist/server.js",
-    "lint": "eslint src/**/*.ts"
+    "migrate:ci": "prisma migrate deploy",
+    "test:integration": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --runInBand"
   },
   "keywords": [],
   "author": "",
@@ -46,5 +45,8 @@
     "ts-jest": "^29.4.6",
     "tsx": "^4.19.2",
     "typescript": "^5.9.3"
+  },
+  "prisma": {
+    "config": "prisma.config.ts"
   }
 }
