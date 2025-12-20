@@ -17,6 +17,7 @@ frontend/.env.local
 # ==========================================
 node_modules/
 */node_modules/
+**/node_modules/.prisma/
 
 # ==========================================
 # ⚙️ SYSTEM & IDE
@@ -51,6 +52,16 @@ backend/src/generated/
 backend/prisma/generated/
 backend/generated/
 
+docker-data/
+.docker/
+
+*.sqlite
+*.db
+
+.jest/
+
+.render/
+
 # ==========================================
 # 🎨 FRONTEND (Next.js)
 # ==========================================
@@ -64,6 +75,5 @@ frontend/dist/
 
 # TypeScript cache
 *.tsbuildinfo
-next-env.d.ts
 
 frontend/.env/
