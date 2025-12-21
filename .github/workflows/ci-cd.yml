@@ -11,18 +11,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Start CI stack
-        run: docker compose -f docker-compose.ci.yml up -d --build
+      # Build images once
+      - name: Build CI images
+        run: docker compose -f docker-compose.ci.yml build
 
-      - name: Run migrations
-        run: docker compose -f docker-compose.ci.yml exec backend npm run migrate:ci
+      # Run migrations as a one-off container
+      - name: Run database migrations
+        run: |
+          docker compose -f docker-compose.ci.yml run --rm backend \
+            npm run migrate:ci
 
+      # Run integration tests as a one-off container (CRITICAL)
       - name: Run integration tests
-        run: docker compose -f docker-compose.ci.yml exec backend npm run test:integration
+        run: |
+          docker compose -f docker-compose.ci.yml run --rm backend \
+            npm run test:integration -- --forceExit
 
-      - name: Shutdown stack
+      # Always clean up volumes & networks
+      - name: Cleanup
         if: always()
         run: docker compose -f docker-compose.ci.yml down -v
 
