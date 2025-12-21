@@ -2,20 +2,24 @@ import request from "supertest";
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from "@jest/globals";
 import app from "../src/app";
 import { prisma } from "../src/lib/prisma";
+// import { jest } from "@jest/globals";
 
 describe("Authentication API", () => {
-  beforeEach(async () => {
-    // HARD RESET — REQUIRED
-    await prisma.user.deleteMany();
-  });
+  // beforeEach(async () => {
+  //   // HARD RESET — REQUIRED
+  //   await prisma.meal.deleteMany();
+  //   await prisma.workout.deleteMany();
+  //   await prisma.user.deleteMany();
+  // });
 
   afterAll(async () => {
-    await prisma.$disconnect();
+    await Promise.all([prisma.meal.deleteMany(), prisma.workout.deleteMany()]);
+    await prisma.user.deleteMany(), await prisma.$disconnect();
   });
 
   const generateUser = () => ({
-    username: "testuser_" + Date.now(),
-    email: `test_${Date.now()}@example.com`,
+    username: "testuser",
+    email: `test@example.com`,
     password: "Password123!",
   });
 
@@ -37,7 +41,7 @@ describe("Authentication API", () => {
       await request(app).post("/api/auth/register").send(user);
       const res = await request(app).post("/api/auth/register").send(user);
 
-      expect(res.status).toBe(400); // OR 409 if you change controller
+      expect(res.status).toBe(400);
     });
   });
 
