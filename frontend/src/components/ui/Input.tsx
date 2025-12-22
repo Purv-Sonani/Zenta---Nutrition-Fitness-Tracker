@@ -41,7 +41,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className
             "bg-(--surface) text-(--foreground) placeholder:text-(--border-strong)",
             "focus:outline-none focus:ring-2 focus:ring-offset-0",
             "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
-            error ? "border-red-500 focus:border-red-500 focus:ring-red-300" : "border-(--border-subtle) focus:border-(--color-primary) focus:ring-(--color-primary)/20",
+            error ? "border-red-500 focus:border-red-500 focus:ring-red-300" : "border-(--border-subtle) focus:border-primary focus:ring-primary/20",
             className
           )}
           {...props}

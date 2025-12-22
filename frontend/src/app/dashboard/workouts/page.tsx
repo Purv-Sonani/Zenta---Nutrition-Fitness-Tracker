@@ -16,7 +16,7 @@ export default function WorkoutsPage() {
   if (isLoading && workouts.length === 0) {
     return (
       <div className="flex h-96 items-center justify-center">
-        <Loader className="h-10 w-10 text-(--color-primary)" />
+        <Loader className="h-10 w-10 text-primary" />
       </div>
     );
   }
@@ -63,7 +63,7 @@ export default function WorkoutsPage() {
 
             <div className="space-y-3 text-sm text-(--text-muted)">
               <div className="flex items-center">
-                <FaClock className="mr-2 text-(--color-primary) h-4 w-4" />
+                <FaClock className="mr-2 text-primary h-4 w-4" />
                 {workout.duration} mins
               </div>
 
@@ -76,7 +76,7 @@ export default function WorkoutsPage() {
             </div>
 
             <div className="mt-4 pt-4 border-t border-(--border-subtle) flex justify-end">
-              <span className="text-sm text-(--color-primary) font-medium cursor-pointer hover:underline">View Details →</span>
+              <span className="text-sm text-primary font-medium cursor-pointer hover:underline">View Details →</span>
             </div>
           </div>
         ))}

@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* DEFINE THEME */
-@theme {
+@theme{
   --color-primary: #6366f1;
   --color-primary-foreground: #ffffff;
   --color-primary-hover: #4f46e5;
@@ -28,7 +28,7 @@
 
   --border-subtle: #e4e4e7;
   --border-strong: #d4d4d8;
-  
+
   --text-muted: #6b7280;
 
   --radius: 0.75rem;
