@@ -1,49 +1,35 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-import { prisma } from "../lib/prisma.js"; // .js extension is required!
+import { prisma } from "../lib/prisma.js";
 
-// Define what our decoded token looks like
 interface DecodedToken extends JwtPayload {
   userId: string;
 }
 
 export const protect = async (req: Request, res: Response, next: NextFunction) => {
-  let token;
+  try {
+    const token = req.cookies?.jwt;
 
-  // Read the token from the cookie
-  token = req.cookies.jwt;
-
-  if (token) {
-    try {
-      // 1. Verify the token
-      // We use '!' to tell TS we are sure the secret exists (checked in generateToken)
-      const secret = process.env.JWT_SECRET!;
-
-      const decoded = jwt.verify(token, secret) as DecodedToken;
-
-      // 2. Find the user in the database
-      const user = await prisma.user.findUnique({
-        where: { id: decoded.userId },
-      });
-
-      if (user) {
-        // 3. Remove the password from the object
-        // destructure 'password' out and keep the rest in 'userWithoutPassword'
-        const { password, ...userWithoutPassword } = user;
-
-        // 4. Attach the user to the request object
-        // cast as 'any' here to prevent strict type conflicts with Express definitions
-        req.user = userWithoutPassword as any;
-
-        next();
-      } else {
-        res.status(401).json({ message: "Not authorized, user not found" });
-      }
-    } catch (error) {
-      console.error(error);
-      res.status(401).json({ message: "Not authorized, token failed" });
+    if (!token) {
+      return res.status(401).json({ message: "Not authorized, no token" });
     }
-  } else {
-    res.status(401).json({ message: "Not authorized, no token" });
+
+    const secret = process.env.JWT_SECRET!;
+    const decoded = jwt.verify(token, secret) as DecodedToken;
+
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "Not authorized, user not found" });
+    }
+
+    const { password, ...userWithoutPassword } = user;
+    req.user = userWithoutPassword as any;
+
+    return next();
+  } catch (error) {
+    return res.status(401).json({ message: "Not authorized, token failed" });
   }
 };

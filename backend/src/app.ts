@@ -8,6 +8,8 @@ import mealRoutes from "./api/meal.routes.js";
 import workoutRoutes from "./api/workout.routes.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 import aiRoutes from "./api/ai.routes.js";
+import progressRoutes from "./api/progress.routes.js";
+import goalsRoutes from "./api/goals.routes.js";
 
 // Initialize the Express app
 const app = express();
@@ -34,6 +36,10 @@ app.use("/api/meals", mealRoutes);
 app.use("/api/workouts", workoutRoutes);
 // request to /api/ai will be handled by aiRoutes
 app.use("/api/ai", aiRoutes);
+// request to /api/progress will be handled by progressRoutes
+app.use("/api/progress", progressRoutes);
+// request to /api/goals will be handled by goalsRoutes
+app.use("/api/goals", goalsRoutes);
 
 // Global Error Handler
 app.use(errorHandler);

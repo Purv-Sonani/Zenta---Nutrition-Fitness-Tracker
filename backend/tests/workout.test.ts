@@ -65,8 +65,6 @@ describe("Meal API Integration", () => {
 
         const res = await request(app).post("/api/workouts").set("Cookie", cookie).send(workoutData);
 
-        console.log("res erorrrrrr", res);
-
         expect(res.status).toBe(201);
         expect(res.body.success).toBe(true);
         expect(res.body.data.activity).toBe("Chest Day");
