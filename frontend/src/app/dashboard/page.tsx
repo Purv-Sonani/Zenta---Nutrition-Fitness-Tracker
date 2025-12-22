@@ -4,6 +4,7 @@ import { useEffect, useMemo } from "react";
 import { FaFire, FaDumbbell, FaUtensils } from "react-icons/fa";
 import { useWorkoutStore } from "@/src/store/useWorkoutsStore";
 import { useNutritionStore } from "@/src/store/useNutritionStore";
+import { useGoalsStore } from "@/src/store/useGoalsStore";
 import { Loader } from "@/src/components/ui";
 import { evaluateDailySummary } from "@/src/domain/dashboard/evaluateDailySummary";
 import { MetricCard } from "@/src/components/dashboard/MetricCard";
@@ -17,11 +18,13 @@ import { PatternWarnings } from "@/src/components/dashboard/PatternWarnings";
 export default function DashboardPage() {
   const { workouts, fetchWorkouts, isLoading: wLoading, isInitialized: wInit } = useWorkoutStore();
   const { meals, fetchMeals, isLoading: mLoading, isInitialized: mInit } = useNutritionStore();
+  const { goals, fetchGoals } = useGoalsStore();
 
   useEffect(() => {
     fetchWorkouts();
     fetchMeals();
-  }, [fetchWorkouts, fetchMeals]);
+    fetchGoals();
+  }, [fetchWorkouts, fetchMeals, fetchGoals]);
 
   const today = new Date().toISOString().split("T")[0];
 
@@ -33,7 +36,8 @@ export default function DashboardPage() {
       todaysMeals.reduce((a, b) => a + b.calories, 0),
       todaysWorkouts.reduce((a, b) => a + (b.caloriesBurned || 0), 0),
       todaysMeals.reduce((a, b) => a + b.protein, 0),
-      todaysWorkouts.reduce((a, b) => a + b.duration, 0)
+      todaysWorkouts.reduce((a, b) => a + b.duration, 0),
+      goals
     );
   }, [meals, workouts, today]);
 
