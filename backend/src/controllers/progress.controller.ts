@@ -45,9 +45,14 @@ export const getWeeklySummary = async (req: Request, res: Response, next: NextFu
     ]);
 
     // ---- Calculations ----
-    const DAILY_CALORIES_TARGET = 2000;
-    const PROTEIN_THRESHOLD = 20;
-    const WORKOUT_TARGET = 5;
+
+    const goal = await prisma.userGoal.findUnique({
+      where: { userId: req.user.id },
+    });
+
+    const DAILY_CALORIES_TARGET = goal?.dailyCaloriesTarget ?? 2000;
+    const PROTEIN_THRESHOLD = goal?.dailyProteinTarget ?? 20;
+    const WORKOUT_TARGET = goal?.weeklyWorkoutTarget ?? 5;
 
     const totalCalories = meals.reduce((sum, m) => sum + m.calories, 0);
     const maxCalories = days * DAILY_CALORIES_TARGET;

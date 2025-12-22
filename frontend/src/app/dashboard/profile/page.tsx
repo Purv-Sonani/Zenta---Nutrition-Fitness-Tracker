@@ -16,9 +16,6 @@ export default function ProfilePage() {
       try {
         const data = await authService.getProfile();
         setUser(data);
-      } catch (error) {
-        console.error("Failed to load profile", error);
-        // If fetch fails, they might not be logged in. Redirect logic could go here.
       } finally {
         setIsLoading(false);
       }
@@ -30,7 +27,7 @@ export default function ProfilePage() {
   const handleLogout = async () => {
     try {
       await authService.logout();
-      router.push("/login"); // Redirect to login page
+      router.push("/login");
     } catch (error) {
       console.error("Logout failed", error);
     }
@@ -48,31 +45,30 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">My Profile</h1>
+      <h1 className="text-2xl font-bold text-(--foreground)">My Profile</h1>
 
-      {/* Profile Card */}
-      <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center">
-        <div className="h-24 w-24 bg-blue-50 rounded-full flex items-center justify-center text-primary mb-4">
+      <div className="bg-(--surface) p-8 rounded-2xl shadow-sm border border-(--border-subtle) flex flex-col items-center text-center">
+        <div className="h-24 w-24 bg-(--surface-muted) rounded-full flex items-center justify-center text-primary mb-4">
           <FaUserCircle className="h-12 w-12" />
         </div>
 
-        <h2 className="text-xl font-bold text-gray-900">{user.username}</h2>
-        <p className="text-gray-500">Member</p>
+        <h2 className="text-xl font-bold text-(--foreground)">{user.username}</h2>
+        <p className="text-(--text-muted)">Member</p>
 
         <div className="w-full mt-8 space-y-4 text-left">
-          <div className="p-4 bg-gray-50 rounded-lg flex items-center gap-4">
-            <FaEnvelope className="text-gray-400" />
+          <div className="p-4 bg-(--surface-muted) rounded-lg flex items-center gap-4">
+            <FaEnvelope className="text-(--text-muted)" />
             <div>
-              <p className="text-xs text-gray-500 uppercase font-semibold">Email Address</p>
-              <p className="text-gray-900 font-medium">{user.email}</p>
+              <p className="text-xs text-(--text-muted) uppercase font-semibold">Email Address</p>
+              <p className="text-(--foreground) font-medium">{user.email}</p>
             </div>
           </div>
 
-          <div className="p-4 bg-gray-50 rounded-lg flex items-center gap-4">
-            <FaCalendarAlt className="text-gray-400" />
+          <div className="p-4 bg-(--surface-muted) rounded-lg flex items-center gap-4">
+            <FaCalendarAlt className="text-(--text-muted)" />
             <div>
-              <p className="text-xs text-gray-500 uppercase font-semibold">Joined On</p>
-              <p className="text-gray-900 font-medium">{new Date(user.createdAt).toLocaleDateString()}</p>
+              <p className="text-xs text-(--text-muted) uppercase font-semibold">Joined On</p>
+              <p className="text-(--foreground) font-medium">{new Date(user.createdAt).toLocaleDateString()}</p>
             </div>
           </div>
         </div>

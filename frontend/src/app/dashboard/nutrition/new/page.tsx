@@ -46,9 +46,7 @@ export default function NewMealPage() {
 
       addMealToStore(newMeal);
       router.back();
-      //   router.push("/dashboard/nutrition");
     } catch (err: any) {
-      console.error(err);
       const msg = err.response?.data?.message || "Failed to log meal.";
       setError(msg);
     } finally {
@@ -58,14 +56,14 @@ export default function NewMealPage() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-8">
-      <div className="flex items-center space-x-4 border-b border-gray-100 pb-6">
-        <Link href="/dashboard/nutrition" className="p-2 -ml-2 text-gray-400 hover:text-gray-600 rounded-full">
+      <div className="flex items-center space-x-4 border-b border-(--border-subtle) pb-6">
+        <Link href="/dashboard/nutrition" className="p-2 -ml-2 text-(--text-muted) hover:text-(--foreground) rounded-full">
           <FaArrowLeft className="h-5 w-5" />
         </Link>
-        <h1 className="text-2xl font-bold text-gray-900">Log Meal</h1>
+        <h1 className="text-2xl font-bold text-(--foreground)">Log Meal</h1>
       </div>
 
-      <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+      <div className="bg-(--surface) p-8 rounded-2xl shadow-sm border border-(--border-subtle)">
         {error && <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-lg text-sm font-medium">{error}</div>}
 
         <form onSubmit={handleSubmit} className="space-y-8">

@@ -10,6 +10,9 @@ import { MetricCard } from "@/src/components/dashboard/MetricCard";
 import { StatusBadge } from "@/src/components/dashboard/StatusBadge";
 import { DailyInsight } from "@/src/components/dashboard/DailyInsight";
 import { QuickActions } from "@/src/components/dashboard/QuickActions";
+import { ProgressOverview } from "@/src/components/dashboard/ProgressOverview";
+import { TrendSignals } from "@/src/components/dashboard/TrendSignals";
+import { PatternWarnings } from "@/src/components/dashboard/PatternWarnings";
 
 export default function DashboardPage() {
   const { workouts, fetchWorkouts, isLoading: wLoading, isInitialized: wInit } = useWorkoutStore();
@@ -49,18 +52,19 @@ export default function DashboardPage() {
           <h1 className="text-2xl font-bold">Today</h1>
           <p className="opacity-70">Goal alignment snapshot</p>
         </div>
+
         <StatusBadge status={summary.status} />
       </header>
-
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <MetricCard title="Calories In" value={summary.caloriesIn} sub={`${summary.protein}g protein`} icon={<FaUtensils />} />
         <MetricCard title="Calories Out" value={summary.caloriesOut} sub={`${summary.duration} min active`} icon={<FaFire />} />
         <MetricCard title="Net Balance" value={summary.net} sub="Energy balance" icon={<FaDumbbell />} />
       </section>
-
       <DailyInsight status={summary.status} />
-
       <QuickActions />
+      <ProgressOverview />
+      <TrendSignals />
+      <PatternWarnings />
     </div>
   );
 }

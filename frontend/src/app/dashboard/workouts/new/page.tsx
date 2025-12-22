@@ -10,8 +10,6 @@ import { useWorkoutStore } from "@/src/store/useWorkoutsStore";
 
 export default function NewWorkoutPage() {
   const router = useRouter();
-
-  // Get the 'addWorkout' action from the store
   const addWorkoutToStore = useWorkoutStore((state) => state.addWorkout);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -35,7 +33,6 @@ export default function NewWorkoutPage() {
     setError("");
 
     try {
-      // 1. DATABASE WRITE: Wait for API to confirm save
       const newWorkout = await workoutService.create({
         activity: formData.activity,
         duration: Number(formData.duration),
@@ -43,15 +40,9 @@ export default function NewWorkoutPage() {
         date: new Date(formData.date).toISOString(),
       });
 
-      // 2. STORE UPDATE: Add the returned workout (with ID) to global state
-      // This ensures when we go back, the list is already updated.
       addWorkoutToStore(newWorkout);
-
-      // 3. NAVIGATE: Go back to list
-      //   router.push("/dashboard/workouts");
       router.back();
     } catch (err: any) {
-      console.error(err);
       const msg = err.response?.data?.message || "Failed to create workout.";
       setError(msg);
     } finally {
@@ -61,17 +52,17 @@ export default function NewWorkoutPage() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-8">
-      <div className="flex items-center space-x-4 border-b border-gray-100 pb-6">
-        <Link href="/dashboard/workouts" className="p-2 -ml-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full transition-colors">
+      <div className="flex items-center space-x-4 border-b border-(--border-subtle) pb-6">
+        <Link href="/dashboard/workouts" className="p-2 -ml-2 text-(--text-muted) hover:text-(--foreground) hover:bg-(--surface-muted) rounded-full transition-colors">
           <FaArrowLeft className="h-5 w-5" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Log Workout</h1>
-          <p className="text-sm text-gray-500">Record your session details below</p>
+          <h1 className="text-2xl font-bold text-(--foreground)">Log Workout</h1>
+          <p className="text-sm text-(--text-muted)">Record your session details below</p>
         </div>
       </div>
 
-      <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+      <div className="bg-(--surface) p-8 rounded-2xl shadow-sm border border-(--border-subtle)">
         {error && <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-lg text-sm font-medium border border-red-100">{error}</div>}
 
         <form onSubmit={handleSubmit} className="space-y-8">
@@ -84,7 +75,7 @@ export default function NewWorkoutPage() {
 
           <div className="pt-2">
             <Input id="date" name="date" label="Date" type="date" value={formData.date} onChange={handleChange} required />
-            <p className="mt-1 text-xs text-gray-400">Leave as today or select a past date to backlog.</p>
+            <p className="mt-1 text-xs text-(--text-muted)">Leave as today or select a past date to backlog.</p>
           </div>
 
           <div className="pt-6 flex items-center gap-4">

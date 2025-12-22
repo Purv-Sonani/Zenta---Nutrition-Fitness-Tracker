@@ -13,15 +13,11 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, label, error, suffix, id, type, ...props }, ref) => {
-  // 🛑 FAANG-Standard: Prevent invalid chars in number inputs
+  // Prevent invalid chars in number inputs
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (type === "number") {
-      // Block 'e', 'E', '+', and '-'
-      if (["e", "E", "+", "-"].includes(e.key)) {
-        e.preventDefault();
-      }
+    if (type === "number" && ["e", "E", "+", "-"].includes(e.key)) {
+      e.preventDefault();
     }
-    // Pass through any existing onKeyDown prop if provided
     if (props.onKeyDown) {
       props.onKeyDown(e);
     }
@@ -29,7 +25,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className
 
   return (
     <div className="w-full space-y-1.5">
-      <label htmlFor={id} className="block text-sm font-medium text-gray-700">
+      <label htmlFor={id} className="block text-sm font-medium text-(--foreground)">
         {label}
       </label>
 
@@ -38,21 +34,22 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className
           id={id}
           type={type}
           ref={ref}
-          min={type === "number" ? 0 : undefined} // Logic: Default min 0 for numbers
-          onKeyDown={handleKeyDown} // Logic: Block negative typing
+          min={type === "number" ? 0 : undefined}
+          onKeyDown={handleKeyDown}
           className={cn(
-            "block w-full rounded-lg border px-3 py-2 text-gray-900 placeholder-gray-400 shadow-sm transition-all",
+            "block w-full rounded-lg border px-3 py-2 shadow-sm transition-all",
+            "bg-(--surface) text-(--foreground) placeholder:text-(--border-strong)",
             "focus:outline-none focus:ring-2 focus:ring-offset-0",
-            // 👇 CSS FIX: Hide browser default spinners (appearance-none)
             "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
-            error ? "border-red-500 focus:border-red-500 focus:ring-red-200" : "border-gray-300 focus:border-primary focus:ring-primary/20",
+            error ? "border-red-500 focus:border-red-500 focus:ring-red-300" : "border-(--border-subtle) focus:border-(--color-primary) focus:ring-(--color-primary)/20",
             className
           )}
           {...props}
         />
+
         {suffix && (
           <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-            <span className="text-gray-500 text-sm sm:text-base">{suffix}</span>
+            <span className="text-(--border-strong) text-sm sm:text-base">{suffix}</span>
           </div>
         )}
       </div>
