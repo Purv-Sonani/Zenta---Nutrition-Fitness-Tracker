@@ -1,113 +1,112 @@
 import request from "supertest";
-import { describe, it, expect, beforeAll, afterAll } from "@jest/globals";
+import { describe, it, expect, afterEach } from "@jest/globals";
 import app from "../src/app.js";
 import { prisma } from "../src/lib/prisma";
 
-describe("Meal API Integration", () => {
-  afterAll(async () => {
-    await Promise.all([prisma.meal.deleteMany(), prisma.workout.deleteMany()]);
-    await prisma.user.deleteMany(), await prisma.$disconnect();
+describe("Workout API Integration", () => {
+  afterEach(async () => {
+    await prisma.workout.deleteMany();
+    await prisma.user.deleteMany();
   });
 
-  // ------------------ helpers ------------------
+  // ---------------- helpers ----------------
 
-  const makeUsername = (base: string) =>
-    base
-      .toLowerCase()
-      .replace(/[^a-z0-9]/g, "")
-      .slice(0, 10);
+  const suffix = () => Math.random().toString(36).substring(2, 7);
 
-  const generateSuffix = (length = 5) =>
-    Math.random()
-      .toString(36)
-      .substring(2, 2 + length);
-
-  const registerAndLogin = async (rawName: string) => {
-    const username = makeUsername(rawName);
-    const email = `${username}${generateSuffix()}@test.com`;
+  const registerAndLogin = async (name: string) => {
+    const email = `${name}${suffix()}@test.com`;
     const password = "Password123!";
 
-    const registerRes = await request(app).post("/api/auth/register").send({
-      username, // ✅ matches schema
+    await request(app).post("/api/auth/register").send({
+      username: name,
       email,
       password,
     });
 
-    expect(registerRes.status).toBe(201);
-    expect(registerRes.body.data).toBeDefined();
+    const login = await request(app).post("/api/auth/login").send({ email, password });
 
-    const loginRes = await request(app).post("/api/auth/login").send({ email, password });
-
-    expect(loginRes.status).toBe(200);
-    expect(loginRes.headers["set-cookie"]).toBeDefined();
-
-    return {
-      cookie: loginRes.headers["set-cookie"],
-      userId: registerRes.body.data.id,
-    };
+    return login.headers["set-cookie"];
   };
 
   // =================================================================
-  // TEST SUITE: WORKOUT API
+  // POST /api/workouts
   // =================================================================
 
-  describe("Workout API Integration", () => {
-    describe("POST /api/workouts", () => {
-      it("should create a workout when authenticated", async () => {
-        const { cookie } = await registerAndLogin("workout_user");
+  it("should create a workout", async () => {
+    const cookie = await registerAndLogin("workoutuser");
 
-        const workoutData = {
-          activity: "Chest Day",
-          duration: 60,
-          caloriesBurned: 500,
-          date: new Date().toISOString(),
-        };
-
-        const res = await request(app).post("/api/workouts").set("Cookie", cookie).send(workoutData);
-
-        expect(res.status).toBe(201);
-        expect(res.body.success).toBe(true);
-        expect(res.body.data.activity).toBe("Chest Day");
-      });
-
-      it("should fail with 401 if not authenticated", async () => {
-        const res = await request(app).post("/api/workouts").send({
-          name: "Unauthorized Workout",
-          duration: 30,
-        });
-
-        expect(res.status).toBe(401);
-      });
-
-      it("should fail with 400 if validation fails", async () => {
-        const { cookie } = await registerAndLogin("invalid_workout");
-
-        const res = await request(app).post("/api/workouts").set("Cookie", cookie).send({
-          // missing required fields
-          name: "Bad Workout",
-        });
-
-        expect(res.status).toBe(400);
-        expect(res.body).toHaveProperty("message");
-      });
+    const res = await request(app).post("/api/workouts").set("Cookie", cookie).send({
+      activity: "Running",
+      duration: 30,
+      caloriesBurned: 300,
     });
 
-    describe("GET /api/workouts", () => {
-      it("should return workouts for the logged-in user only", async () => {
-        const userA = await registerAndLogin("userA");
-        const userB = await registerAndLogin("userB");
+    expect(res.status).toBe(201);
+    expect(res.body.data.activity).toBe("Running");
+  });
 
-        await request(app).post("/api/workouts").set("Cookie", userA.cookie).send({
-          name: "User A Workout",
-          duration: 45,
-        });
-
-        const res = await request(app).get("/api/workouts").set("Cookie", userB.cookie);
-
-        expect(res.status).toBe(200);
-        expect(res.body.count).toBe(0);
-        expect(res.body.data).toHaveLength(0);
-      });
+  it("should reject unauthenticated workout creation", async () => {
+    const res = await request(app).post("/api/workouts").send({
+      activity: "Ghost Lift",
+      duration: 20,
+      caloriesBurned: 200,
     });
+
+    expect(res.status).toBe(401);
+  });
+
+  it("should fail validation if duration missing", async () => {
+    const cookie = await registerAndLogin("badworkout");
+
+    const res = await request(app).post("/api/workouts").set("Cookie", cookie).send({ activity: "Yoga" });
+
+    expect(res.status).toBe(400);
+  });
+
+  // =================================================================
+  // GET /api/workouts
+  // =================================================================
+
+  it("should count unique workout days", async () => {
+    const cookie = await registerAndLogin("uniquedays");
+
+    const today = new Date().toISOString();
+
+    await request(app).post("/api/workouts").set("Cookie", cookie).send({
+      activity: "Bench",
+      duration: 40,
+      caloriesBurned: 250,
+      date: today,
+    });
+
+    await request(app).post("/api/workouts").set("Cookie", cookie).send({
+      activity: "Squats",
+      duration: 35,
+      caloriesBurned: 300,
+      date: today,
+    });
+
+    const res = await request(app).get("/api/workouts").set("Cookie", cookie);
+
+    expect(res.status).toBe(200);
+    expect(res.body.count).toBe(1); // SAME DAY
+    expect(res.body.data.length).toBe(2);
+  });
+
+  it("should isolate workouts per user", async () => {
+    const cookieA = await registerAndLogin("userA");
+    const cookieB = await registerAndLogin("userB");
+
+    await request(app).post("/api/workouts").set("Cookie", cookieA).send({
+      activity: "Secret Run",
+      duration: 60,
+      caloriesBurned: 500,
+    });
+
+    const res = await request(app).get("/api/workouts").set("Cookie", cookieB);
+
+    expect(res.status).toBe(200);
+    expect(res.body.count).toBe(0);
+    expect(res.body.data).toHaveLength(0);
   });
 });

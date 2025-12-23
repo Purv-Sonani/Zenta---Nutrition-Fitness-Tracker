@@ -84,17 +84,7 @@ export const getWeeklySummary = async (req: Request, res: Response, next: NextFu
  * @route   GET /api/progress/trends
  * @access  Private
  */
-const TREND_THRESHOLD = 0.1; // 10% change to count as signal
 
-function getDirection(previous: number, recent: number): "up" | "down" | "flat" {
-  if (previous === 0) return "flat";
-
-  const delta = (recent - previous) / previous;
-
-  if (delta > TREND_THRESHOLD) return "up";
-  if (delta < -TREND_THRESHOLD) return "down";
-  return "flat";
-}
 type TrendDirection = "improving" | "declining" | "stable" | "insufficient_data";
 
 const getDirectionTrendSignals = (prev: number, recent: number): TrendDirection => {
@@ -106,6 +96,12 @@ const getDirectionTrendSignals = (prev: number, recent: number): TrendDirection 
 
 export const getTrendSignals = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const validation = trendsQuerySchema.safeParse(req.query);
+
+    if (!validation.success) {
+      throw new AppError(validation.error.issues[0].message, 400);
+    }
+
     if (!req.user) {
       throw new AppError("Not authorized", 401);
     }

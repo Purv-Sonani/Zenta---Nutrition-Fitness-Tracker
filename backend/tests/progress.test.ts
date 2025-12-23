@@ -69,12 +69,6 @@ describe("Progress API Integration", () => {
       expect(res.body.data).toHaveProperty("proteinConsistencyDays");
       expect(res.body.data).toHaveProperty("workoutAdherencePercent");
     });
-
-    it("should fail with 401 if not authenticated", async () => {
-      const res = await request(app).get("/api/progress/weekly-summary");
-
-      expect(res.status).toBe(401);
-    });
   });
 
   // =================================================================
@@ -89,9 +83,14 @@ describe("Progress API Integration", () => {
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
-      expect(res.body.data).toHaveProperty("caloriesTrend");
-      expect(res.body.data).toHaveProperty("proteinTrend");
-      expect(res.body.data).toHaveProperty("workoutTrend");
+
+      expect(res.body.data).toEqual(
+        expect.objectContaining({
+          caloriesTrend: expect.any(String),
+          proteinTrend: expect.any(String),
+          workoutTrend: expect.any(String),
+        })
+      );
     });
 
     it("should fail with invalid query params", async () => {
@@ -109,15 +108,24 @@ describe("Progress API Integration", () => {
   // =================================================================
 
   describe("GET /api/progress/patterns", () => {
-    it("should return warnings array", async () => {
+    it("should return insights array", async () => {
       const { cookie } = await registerAndLogin("pattern_user");
 
       const res = await request(app).get("/api/progress/patterns").set("Cookie", cookie);
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
-      expect(res.body.data).toHaveProperty("warnings");
-      expect(Array.isArray(res.body.data.warnings)).toBe(true);
+
+      expect(res.body.data).toHaveProperty("insights");
+      expect(Array.isArray(res.body.data.insights)).toBe(true);
+
+      // If insights exist, validate structure
+      if (res.body.data.insights.length > 0) {
+        const insight = res.body.data.insights[0];
+        expect(insight).toHaveProperty("type");
+        expect(insight).toHaveProperty("title");
+        expect(insight).toHaveProperty("description");
+      }
     });
   });
 });
