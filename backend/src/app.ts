@@ -18,7 +18,7 @@ app.use(helmet()); // Adds various HTTP headers for security
 app.set("trust proxy", 1);
 app.use(
   cors({
-    origin: ["http://localhost:3001", process.env.CLIENT_URL || ""],
+    origin: ["http://localhost:3000", process.env.CLIENT_URL || ""],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],

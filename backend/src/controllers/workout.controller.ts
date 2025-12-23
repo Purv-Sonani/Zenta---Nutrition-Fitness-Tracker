@@ -61,7 +61,7 @@ export const getWorkouts = async (req: Request, res: Response, next: NextFunctio
 
     res.status(200).json({
       success: true,
-      count: workouts.length,
+      count: new Set(workouts.map((w) => w.date.toDateString())).size,
       data: workouts,
     });
   } catch (error) {

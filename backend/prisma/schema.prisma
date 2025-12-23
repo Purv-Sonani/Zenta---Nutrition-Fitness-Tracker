@@ -33,7 +33,7 @@ model UserGoal {
   // Targets
   dailyCaloriesTarget  Int
   dailyProteinTarget   Int
-  weeklyWorkoutTarget  Int
+  weeklyWorkoutDaysTarget  Int
 
   // Meta
   createdAt            DateTime @default(now())

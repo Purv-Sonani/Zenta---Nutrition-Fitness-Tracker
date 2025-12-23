@@ -12,6 +12,16 @@ export interface TrendSignals {
   workoutTrend: TrendStatus;
 }
 
-export interface PatternResponse {
-  warnings: string[];
+export type PatternInsightType = "protein" | "workout";
+
+export interface PatternInsight {
+  type: PatternInsightType;
+  title: string;
+  description: string;
 }
+
+export interface PatternResponse {
+  insights: PatternInsight[];
+}
+
+export type TrendDirection = "improving" | "declining" | "stable";

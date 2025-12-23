@@ -79,7 +79,7 @@ describe("Goals API Integration", () => {
       const goalData = {
         dailyCaloriesTarget: 2200,
         dailyProteinTarget: 140,
-        weeklyWorkoutTarget: 5,
+        weeklyWorkoutDaysTarget: 5,
       };
 
       const res = await request(app).post("/api/goals").set("Cookie", cookie).send(goalData);
@@ -104,7 +104,7 @@ describe("Goals API Integration", () => {
       const res = await request(app).post("/api/goals").send({
         dailyCaloriesTarget: 2000,
         dailyProteinTarget: 120,
-        weeklyWorkoutTarget: 4,
+        weeklyWorkoutDaysTarget: 4,
       });
 
       expect(res.status).toBe(401);

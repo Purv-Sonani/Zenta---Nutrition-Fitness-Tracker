@@ -1,21 +1,23 @@
 "use client";
 
+import { Card } from "@/src/components/ui/Card";
 import { useProgressStore } from "@/src/store/useProgressStore";
-import { Badge } from "@/src/components/ui/Badge";
+import { PatternInsight } from "./PatternInsights";
 
-export function PatternWarnings() {
+export function PatternInsights() {
   const { patterns } = useProgressStore();
 
-  if (!patterns || patterns.warnings.length === 0) return null;
+  if (!patterns || patterns.insights.length === 0) return null;
 
   return (
-    <div>
-      <h2 className="text-lg font-bold mb-2">Insights</h2>
-      <div className="flex flex-wrap gap-2">
-        {patterns.warnings.map((w, i) => (
-          <Badge key={i} text={w} />
+    <Card className="p-6">
+      <h2 className="text-lg font-semibold mb-4">Insights</h2>
+
+      <div className="space-y-4">
+        {patterns.insights.map((insight, index) => (
+          <PatternInsight key={index} type={insight.type} title={insight.title} description={insight.description} />
         ))}
       </div>
-    </div>
+    </Card>
   );
 }

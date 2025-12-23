@@ -54,5 +54,5 @@ export const patternsQuerySchema = z.object({});
 export const userGoalSchema = z.object({
   dailyCaloriesTarget: z.number().positive(),
   dailyProteinTarget: z.number().positive(),
-  weeklyWorkoutTarget: z.number().positive().max(14),
+  weeklyWorkoutDaysTarget: z.number().int().min(1).max(7),
 });

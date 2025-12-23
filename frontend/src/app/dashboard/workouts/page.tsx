@@ -13,7 +13,7 @@ export default function WorkoutsPage() {
     fetchWorkouts();
   }, [fetchWorkouts]);
 
-  if (isLoading && workouts.length === 0) {
+  if (isLoading && new Set(workouts.map((w) => new Date(w.date).toDateString())).size === 0) {
     return (
       <div className="flex h-96 items-center justify-center">
         <Loader className="h-10 w-10 text-primary" />
@@ -38,7 +38,7 @@ export default function WorkoutsPage() {
 
       {error && <div className="p-4 rounded-lg bg-red-50 text-red-600 border border-red-100">{error}</div>}
 
-      {!isLoading && !error && workouts.length === 0 && (
+      {!isLoading && !error && new Set(workouts.map((w) => new Date(w.date).toDateString())).size === 0 && (
         <div className="text-center py-20 bg-(--surface) rounded-xl border border-dashed border-(--border-strong)">
           <div className="mx-auto h-12 w-12 text-(--text-muted)">
             <FaClock className="h-full w-full" />
