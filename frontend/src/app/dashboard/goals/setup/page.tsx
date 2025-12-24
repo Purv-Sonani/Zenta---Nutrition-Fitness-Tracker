@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Input } from "@/src/components/ui";
 import { useGoalsStore } from "@/src/store/useGoalsStore";
 
 export default function GoalsSetupPage() {
   const router = useRouter();
-  const { upsertGoals, isLoading } = useGoalsStore();
+  const { upsertGoals, status } = useGoalsStore();
 
   const [formData, setFormData] = useState({
     dailyCaloriesTarget: "",
@@ -15,16 +15,37 @@ export default function GoalsSetupPage() {
     weeklyWorkoutDaysTarget: "",
   });
 
-  const [error, setError] = useState("");
+  const [submitError, setSubmitError] = useState("");
 
+  // ---------- Validation ----------
+  const weeklyWorkoutError = useMemo(() => {
+    if (formData.weeklyWorkoutDaysTarget === "") return "";
+
+    const value = Number(formData.weeklyWorkoutDaysTarget);
+
+    if (Number.isNaN(value)) return "Enter a valid number";
+    if (value < 1 || value > 7) return "Enter a number between 1 and 7";
+
+    return "";
+  }, [formData.weeklyWorkoutDaysTarget]);
+
+  const isFormInvalid = Boolean(weeklyWorkoutError);
+
+  // ---------- Handlers ----------
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setSubmitError("");
+
+    if (isFormInvalid) return;
 
     try {
       await upsertGoals({
@@ -35,10 +56,11 @@ export default function GoalsSetupPage() {
 
       router.replace("/dashboard");
     } catch {
-      setError("Failed to save goals. Please try again.");
+      setSubmitError("Failed to save goals. Please try again.");
     }
   };
 
+  // ---------- UI ----------
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-lg bg-(--surface) border border-(--border-subtle) rounded-2xl p-8 space-y-8">
@@ -48,8 +70,8 @@ export default function GoalsSetupPage() {
           <p className="text-(--text-muted)">Zenta uses these targets to track progress and give accurate insights.</p>
         </div>
 
-        {/* Error */}
-        {error && <div className="p-3 rounded-lg bg-(--accent-danger)/10 text-(--accent-danger) text-sm">{error}</div>}
+        {/* Submit Error */}
+        {submitError && <div className="p-3 rounded-lg bg-(--accent-danger)/10 text-(--accent-danger) text-sm">{submitError}</div>}
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -57,9 +79,9 @@ export default function GoalsSetupPage() {
 
           <Input id="dailyProteinTarget" name="dailyProteinTarget" label="Daily Protein Target" type="number" suffix="g" placeholder="e.g. 120" value={formData.dailyProteinTarget} onChange={handleChange} required />
 
-          <Input id="weeklyWorkoutDaysTarget" name="weeklyWorkoutDaysTarget" label="Weekly Workout Target" type="number" placeholder="e.g. 4" value={formData.weeklyWorkoutDaysTarget} onChange={handleChange} required />
+          <Input id="weeklyWorkoutDaysTarget" name="weeklyWorkoutDaysTarget" label="Weekly Workout Target" type="number" placeholder="e.g. 4" value={formData.weeklyWorkoutDaysTarget} onChange={handleChange} error={weeklyWorkoutError} required />
 
-          <Button type="submit" isLoading={isLoading} className="w-full">
+          <Button type="submit" isLoading={status === "loading"} disabled={isFormInvalid} className="w-full">
             Save Goals & Continue
           </Button>
         </form>

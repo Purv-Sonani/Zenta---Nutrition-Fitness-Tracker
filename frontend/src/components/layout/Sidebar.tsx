@@ -9,6 +9,12 @@ import clsx from "clsx";
 import { authService } from "@/src/services/auth.service";
 import { useUIStore } from "@/src/store/useUiStore";
 
+import { useGoalsStore } from "@/src/store/useGoalsStore";
+import { useAuthStore } from "@/src/store/useAuthStore";
+import { useWorkoutStore } from "@/src/store/useWorkoutsStore";
+import { useNutritionStore } from "@/src/store/useNutritionStore";
+import { useProgressStore } from "@/src/store/useProgressStore";
+
 const NAV_ITEMS = [
   { name: "Dashboard", href: "/dashboard", icon: FaHome },
   { name: "Workouts", href: "/dashboard/workouts", icon: FaDumbbell },
@@ -24,8 +30,16 @@ export function Sidebar() {
 
   const handleLogout = async () => {
     await authService.logout();
+
     closeSidebar();
     router.push("/login");
+
+    // Reset All Store
+    useAuthStore.getState().logout();
+    useWorkoutStore.getState().reset();
+    useNutritionStore.getState().reset();
+    useGoalsStore.getState().reset();
+    useProgressStore.getState().reset();
   };
 
   return (
@@ -34,9 +48,9 @@ export function Sidebar() {
       {isSidebarOpen && <div onClick={closeSidebar} className="fixed inset-0 z-40 bg-black/40 md:hidden" />}
 
       {/* Sidebar */}
-      <aside className={clsx("fixed inset-y-0 left-0 z-50 w-64 bg-[var(--surface)] border-r border-[var(--border-subtle)] transition-transform duration-300", isSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0")}>
+      <aside className={clsx("fixed inset-y-0 left-0 z-50 w-64 bg-(--surface) border-r border-(--border-subtle) transition-transform duration-300", isSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0")}>
         {/* Header */}
-        <div className="flex items-center justify-between h-16 px-6 border-b border-[var(--border-subtle)]">
+        <div className="flex items-center justify-between h-16 px-6 border-b border-(--border-subtle)">
           <span className="text-xl font-bold text-primary">ZENTA</span>
           <button onClick={closeSidebar} className="md:hidden opacity-70 hover:opacity-100">
             <FaTimes />
@@ -58,7 +72,7 @@ export function Sidebar() {
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-[var(--border-subtle)]">
+        <div className="p-4 border-t border-(--border-subtle)">
           <button onClick={handleLogout} className="flex items-center w-full gap-3 px-4 py-2 text-sm text-red-600 rounded-lg hover:bg-red-500/10">
             <FaSignOutAlt className="h-5 w-5" />
             Sign Out

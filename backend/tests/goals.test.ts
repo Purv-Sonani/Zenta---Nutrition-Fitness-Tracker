@@ -62,9 +62,8 @@ describe("Goals API Integration", () => {
 
       const res = await request(app).get("/api/goals").set("Cookie", cookie);
 
-      expect(res.status).toBe(200);
-      expect(res.body.success).toBe(true);
-      expect(res.body.data).toBeNull();
+      expect(res.status).toBe(404);
+      expect(res.body.success).toBe(false);
     });
   });
 

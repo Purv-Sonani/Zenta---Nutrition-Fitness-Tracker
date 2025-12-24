@@ -18,6 +18,13 @@ export const getUserGoal = async (req: Request, res: Response, next: NextFunctio
       where: { userId: req.user.id },
     });
 
+    if (!goal) {
+      return res.status(404).json({
+        success: false,
+        message: "Goal not set",
+      });
+    }
+
     res.status(200).json({
       success: true,
       data: goal,

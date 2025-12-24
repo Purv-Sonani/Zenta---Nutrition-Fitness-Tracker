@@ -6,6 +6,11 @@ import { FaUserCircle, FaEnvelope, FaCalendarAlt, FaSignOutAlt } from "react-ico
 import { authService, UserProfile } from "@/src/services/auth.service";
 import { Button, Loader } from "@/src/components/ui";
 
+import { useGoalsStore } from "@/src/store/useGoalsStore";
+import { useWorkoutStore } from "@/src/store/useWorkoutsStore";
+import { useNutritionStore } from "@/src/store/useNutritionStore";
+import { useProgressStore } from "@/src/store/useProgressStore";
+
 export default function ProfilePage() {
   const router = useRouter();
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -27,6 +32,10 @@ export default function ProfilePage() {
   const handleLogout = async () => {
     try {
       await authService.logout();
+      useGoalsStore.getState().reset();
+      useWorkoutStore.getState().reset();
+      useNutritionStore.getState().reset();
+      useProgressStore.getState().reset();
       router.push("/login");
     } catch (error) {
       console.error("Logout failed", error);

@@ -12,6 +12,8 @@ interface ProgressState {
   isInitialized: boolean;
 
   fetchProgress: () => Promise<void>;
+
+  reset: () => void;
 }
 
 export const useProgressStore = create<ProgressState>((set, get) => ({
@@ -44,5 +46,17 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
         isLoading: false,
       });
     }
+  },
+
+  reset: () => {
+    set({
+      weeklySummary: null,
+      trends: null,
+      patterns: null,
+
+      isLoading: false,
+      error: null,
+      isInitialized: false,
+    });
   },
 }));

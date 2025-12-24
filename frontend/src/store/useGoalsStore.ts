@@ -2,58 +2,67 @@ import { create } from "zustand";
 import { goalsService } from "@/src/services/goals.service";
 import { UserGoals } from "@/src/types/goals";
 
+type GoalsStatus = "idle" | "loading" | "ready";
+
 interface GoalsState {
   goals: UserGoals | null;
-  isLoading: boolean;
+  status: GoalsStatus;
   error: string | null;
-  isInitialized: boolean;
 
   fetchGoals: () => Promise<void>;
   upsertGoals: (data: UserGoals) => Promise<void>;
+  reset: () => void;
 }
 
 export const useGoalsStore = create<GoalsState>((set, get) => ({
   goals: null,
-  isLoading: false,
+  status: "idle",
   error: null,
-  isInitialized: false,
 
   fetchGoals: async () => {
-    if (get().isInitialized) return; // cache hit
+    if (get().status !== "idle") return; // only once
 
-    set({ isLoading: true, error: null });
+    set({ status: "loading", error: null });
 
     try {
       const data = await goalsService.get();
+
       set({
         goals: data,
-        isInitialized: true,
-        isLoading: false,
+        status: "ready",
       });
     } catch (err) {
       set({
+        goals: null,
+        status: "ready", // IMPORTANT: still ready
         error: "Failed to fetch goals",
-        isLoading: false,
       });
     }
   },
 
   upsertGoals: async (data: UserGoals) => {
-    set({ isLoading: true, error: null });
+    set({ status: "loading", error: null });
 
     try {
       const updated = await goalsService.upsert(data);
       set({
         goals: updated,
-        isInitialized: true,
-        isLoading: false,
+        status: "ready",
       });
     } catch (err) {
       set({
+        status: "ready",
         error: "Failed to update goals",
-        isLoading: false,
       });
       throw err;
     }
+  },
+
+  reset: () => {
+    set({
+      goals: null,
+      status: "idle",
+      error: null,
+    });
   },
 }));

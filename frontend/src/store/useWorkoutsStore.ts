@@ -11,6 +11,8 @@ interface WorkoutState {
   // Actions
   fetchWorkouts: () => Promise<void>;
   addWorkout: (workout: Workout) => void;
+
+  reset: () => void;
 }
 
 export const useWorkoutStore = create<WorkoutState>((set, get) => ({
@@ -37,5 +39,13 @@ export const useWorkoutStore = create<WorkoutState>((set, get) => ({
     set((state) => ({
       workouts: [workout, ...state.workouts], // Add new workout to top of list
     }));
+  },
+  reset: () => {
+    set({
+      workouts: [],
+      isLoading: false,
+      error: null,
+      isInitialized: false,
+    });
   },
 }));

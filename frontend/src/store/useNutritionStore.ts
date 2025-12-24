@@ -10,6 +10,8 @@ interface NutritionState {
 
   fetchMeals: () => Promise<void>;
   addMeal: (meal: Meal) => void;
+
+  reset: () => void;
 }
 
 export const useNutritionStore = create<NutritionState>((set, get) => ({
@@ -34,5 +36,14 @@ export const useNutritionStore = create<NutritionState>((set, get) => ({
     set((state) => ({
       meals: [meal, ...state.meals],
     }));
+  },
+
+  reset: () => {
+    set({
+      meals: [],
+      isLoading: false,
+      error: null,
+      isInitialized: false,
+    });
   },
 }));
