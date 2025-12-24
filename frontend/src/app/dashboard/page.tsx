@@ -22,6 +22,8 @@ import { PatternInsights } from "@/src/components/dashboard/PatternWarnings";
 import { useGoalsStore } from "@/src/store/useGoalsStore";
 import { GoalSuggestionCard } from "@/src/components/dashboard/GoalSuggestionCard";
 
+import { NutritionIntelligence } from "@/src/components/dashboard/NutritionIntelligence";
+
 export default function DashboardPage() {
   const { workouts, fetchWorkouts, isLoading: wLoading, isInitialized: wInit } = useWorkoutStore();
   const { meals, fetchMeals, isLoading: mLoading, isInitialized: mInit } = useNutritionStore();
@@ -96,6 +98,8 @@ export default function DashboardPage() {
       <ProgressOverview />
       <TrendSignals />
       <PatternInsights />
+
+      {/* <NutritionIntelligence /> */}
     </div>
   );
 }

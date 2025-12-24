@@ -19,7 +19,7 @@ const NAV_ITEMS = [
   { name: "Dashboard", href: "/dashboard", icon: FaHome },
   { name: "Workouts", href: "/dashboard/workouts", icon: FaDumbbell },
   { name: "Nutrition", href: "/dashboard/nutrition", icon: FaAppleAlt },
-  { name: "Insights", href: "/dashboard/balancer", icon: Sparkles },
+  { name: "AI Meal Balancer", href: "/dashboard/balancer", icon: Sparkles },
   { name: "Profile", href: "/dashboard/profile", icon: FaUser },
 ];
 
