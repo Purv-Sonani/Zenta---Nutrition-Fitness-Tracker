@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import { goalsService } from "@/src/services/goals.service";
 import { UserGoals } from "@/src/types/goals";
+import { useDemoStore } from "./useDemoStore";
+import { DEMO_GOALS } from "@/src/lib/demoData";
 
 type GoalsStatus = "idle" | "loading" | "ready";
 
@@ -21,6 +23,12 @@ export const useGoalsStore = create<GoalsState>((set, get) => ({
 
   fetchGoals: async () => {
     if (get().status !== "idle") return; // only once
+
+    // Demo mode: load mock goals
+    if (useDemoStore.getState().isDemo) {
+      set({ goals: DEMO_GOALS, status: "ready", error: null });
+      return;
+    }
 
     set({ status: "loading", error: null });
 

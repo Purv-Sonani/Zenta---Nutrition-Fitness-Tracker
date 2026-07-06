@@ -12,6 +12,10 @@ backend/.env
 frontend/.env
 frontend/.env.local
 
+# Whitelist .env.example templates (they contain no secrets, just structure)
+!backend/.env.example
+!frontend/.env.example
+
 # ==========================================
 # 📦 DEPENDENCIES
 # ==========================================
@@ -75,5 +79,3 @@ frontend/dist/
 
 # TypeScript cache
 *.tsbuildinfo
-
-frontend/.env/

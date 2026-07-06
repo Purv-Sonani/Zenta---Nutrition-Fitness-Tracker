@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useDemoStore } from "@/src/store/useDemoStore";
 
 // Create the instance
 const api = axios.create({
@@ -17,10 +18,9 @@ api.interceptors.response.use(
   async (error) => {
     // If backend says "You are not authenticated" (401)
     if (error.response?.status === 401) {
-      // Redirect to login
-      // Note: cannot use Next.js 'useRouter' here because this is a plain TS file, not a Component.
-      // We use window.location as a fallback to force the redirect.
-      if (typeof window !== "undefined" && !window.location.pathname.includes("/login")) {
+      // In demo mode, suppress the redirect (no real session exists)
+      const isDemo = useDemoStore.getState().isDemo;
+      if (!isDemo && typeof window !== "undefined" && !window.location.pathname.includes("/login")) {
         window.location.href = "/login";
       }
     }
@@ -29,3 +29,4 @@ api.interceptors.response.use(
 );
 
 export default api;
+

@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import { Meal } from "@/src/types/nutrition";
 import { nutritionService } from "@/src/services/nutrition.service";
+import { useDemoStore } from "./useDemoStore";
+import { DEMO_MEALS } from "@/src/lib/demoData";
 
 interface NutritionState {
   meals: Meal[];
@@ -22,6 +24,12 @@ export const useNutritionStore = create<NutritionState>((set, get) => ({
 
   fetchMeals: async () => {
     if (get().isInitialized) return; // Cache hit
+
+    // Demo mode: load mock meals
+    if (useDemoStore.getState().isDemo) {
+      set({ meals: DEMO_MEALS, isInitialized: true, isLoading: false });
+      return;
+    }
 
     set({ isLoading: true, error: null });
     try {

@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import { Workout } from "@/src/types/workout";
 import { workoutService } from "@/src/services/workout.service";
+import { useDemoStore } from "./useDemoStore";
+import { DEMO_WORKOUTS } from "@/src/lib/demoData";
 
 interface WorkoutState {
   workouts: Workout[];
@@ -25,6 +27,12 @@ export const useWorkoutStore = create<WorkoutState>((set, get) => ({
     // OPTIMIZATION: If we already have data, don't fetch again automatically
     // (You can remove this if you want 'always fresh' data, but this solves your specific issue)
     if (get().isInitialized) return;
+
+    // Demo mode: load mock workouts
+    if (useDemoStore.getState().isDemo) {
+      set({ workouts: DEMO_WORKOUTS, isInitialized: true, isLoading: false });
+      return;
+    }
 
     set({ isLoading: true, error: null });
     try {

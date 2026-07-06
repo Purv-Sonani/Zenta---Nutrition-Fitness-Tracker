@@ -14,6 +14,7 @@ import { useAuthStore } from "@/src/store/useAuthStore";
 import { useWorkoutStore } from "@/src/store/useWorkoutsStore";
 import { useNutritionStore } from "@/src/store/useNutritionStore";
 import { useProgressStore } from "@/src/store/useProgressStore";
+import { useDemoStore } from "@/src/store/useDemoStore";
 
 const NAV_ITEMS = [
   { name: "Dashboard", href: "/dashboard", icon: FaHome },
@@ -28,13 +29,22 @@ export function Sidebar() {
   const router = useRouter();
   const { isSidebarOpen, closeSidebar } = useUIStore();
 
+  const isDemo = useDemoStore.getState().isDemo;
+  const navItems = isDemo ? NAV_ITEMS.filter((item) => item.name !== "Profile") : NAV_ITEMS;
+
   const handleLogout = async () => {
-    await authService.logout();
+    const isDemo = useDemoStore.getState().isDemo;
+
+    // Skip API call in demo mode (no real session)
+    if (!isDemo) {
+      await authService.logout();
+    }
 
     closeSidebar();
     router.push("/login");
 
-    // Reset All Store
+    // Reset All Stores
+    useDemoStore.getState().disableDemo();
     useAuthStore.getState().logout();
     useWorkoutStore.getState().reset();
     useNutritionStore.getState().reset();
@@ -59,7 +69,7 @@ export function Sidebar() {
 
         {/* Nav */}
         <nav className="flex-1 px-4 py-6 space-y-1">
-          {NAV_ITEMS.map((item) => {
+          {navItems.map((item) => {
             const isActive = pathname === item.href;
 
             return (

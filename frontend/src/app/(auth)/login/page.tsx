@@ -6,8 +6,11 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { z } from "zod";
 import { useAuthStore } from "../../../store/useAuthStore";
+import { useDemoStore } from "../../../store/useDemoStore";
 import { authService, loginSchema } from "../../../services/auth.service";
+import { DEMO_USER } from "../../../lib/demoData";
 import { Input, Button, Loader } from "@/src/components/ui";
+import { FaPlay } from "react-icons/fa";
 
 function LoginForm() {
   const router = useRouter();
@@ -63,6 +66,12 @@ function LoginForm() {
     }
   };
 
+  const handleDemoLogin = () => {
+    useDemoStore.getState().enableDemo();
+    setAuth(DEMO_USER);
+    router.push("/dashboard");
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8 bg-white p-8 shadow-lg rounded-xl">
@@ -92,6 +101,27 @@ function LoginForm() {
             </Link>
           </div>
         </form>
+
+        {/* Demo Mode Divider */}
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-200" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-white px-2 text-gray-400">or</span>
+          </div>
+        </div>
+
+        {/* Demo Mode Button */}
+        <button
+          type="button"
+          onClick={handleDemoLogin}
+          className="w-full flex items-center justify-center gap-2 rounded-md border-2 border-dashed border-primary/40 bg-primary/5 px-4 py-3 text-sm font-medium text-primary transition-all hover:border-primary hover:bg-primary/10 hover:shadow-sm"
+        >
+          <FaPlay className="h-3 w-3" />
+          Explore with Test Data
+        </button>
+        <p className="text-center text-xs text-gray-400">No sign-up needed — see the app in action</p>
       </div>
     </div>
   );
@@ -111,3 +141,4 @@ export default function LoginPage() {
     </Suspense>
   );
 }
+

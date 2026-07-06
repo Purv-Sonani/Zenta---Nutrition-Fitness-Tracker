@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import { WeeklySummary, TrendSignals, PatternResponse } from "@/src/types/progress";
 import { progressService } from "@/src/services/progress.service";
+import { useDemoStore } from "./useDemoStore";
+import { DEMO_WEEKLY_SUMMARY, DEMO_TRENDS, DEMO_PATTERNS } from "@/src/lib/demoData";
 
 interface ProgressState {
   weeklySummary: WeeklySummary | null;
@@ -27,6 +29,18 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
 
   fetchProgress: async () => {
     if (get().isInitialized) return;
+
+    // Demo mode: load mock progress
+    if (useDemoStore.getState().isDemo) {
+      set({
+        weeklySummary: DEMO_WEEKLY_SUMMARY,
+        trends: DEMO_TRENDS,
+        patterns: DEMO_PATTERNS,
+        isInitialized: true,
+        isLoading: false,
+      });
+      return;
+    }
 
     set({ isLoading: true, error: null });
 
