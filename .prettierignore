@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Build output
+frontend/.next/
+frontend/out/
+frontend/build/
+backend/dist/
+
+# Generated
+backend/prisma/migrations/
+**/package-lock.json
+frontend/next-env.d.ts
+
+# Coverage & logs
+coverage/
+*.log
+
+# Assets
+*.svg
+*.ico
