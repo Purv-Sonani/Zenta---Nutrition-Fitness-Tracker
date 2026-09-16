@@ -57,29 +57,7 @@ export const userGoalSchema = z.object({
   weeklyWorkoutDaysTarget: z.number().int().min(1).max(7),
 });
 
-export const nutritionInsightSchema = z.object({
-  diagnosis: z.string(),
-
-  confidence: z.number().min(0).max(1),
-
-  root_causes: z.array(z.string()),
-
-  recommendations: z.array(
-    z.object({
-      action: z.string(),
-      impact: z.string(),
-    })
-  ),
-
-  prediction: z.object({
-    risk: z.string(),
-    timeframe: z.string(),
-  }),
-
-  explainability: z.object({
-    triggered_signals: z.array(z.string()),
-    reasoning: z.string(),
-  }),
-
-  warning: z.string().optional(),
+// Schema for the AI Meal Balancer request body
+export const balanceMealSchema = z.object({
+  mealText: z.string().trim().min(1, "Meal description is required").max(500, "Meal description must be 500 characters or less"),
 });
